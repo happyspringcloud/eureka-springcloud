@@ -5,11 +5,11 @@ spring:
   cloud:
     config:
       uri: ${config_servers:http://localhost:9001}
-      searchPaths: eureka-ddd
+      searchPaths: eureka-springcloud
 ---
 spring:
   application:
-    name: eureka-ddd
+    name: eureka-springcloud
   profiles:
     active: ${profile:local}
     include: common
