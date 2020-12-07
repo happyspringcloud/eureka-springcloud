@@ -1,0 +1,79 @@
+#VERSION:1.2
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka-springcloud
+  namespace: springcloud
+  labels:
+    app: eureka-springcloud
+spec:
+  serviceName: eureka-springcloud
+  selector:
+    matchLabels:
+      app: eureka-springcloud
+  replicas: 3
+  template:
+    metadata:
+      name: eureka-springcloud
+      labels:
+        app: eureka-springcloud
+    spec:
+      serviceAccountName: sa-springcloud
+      containers:
+      - name: eureka-springcloud
+        image: harbor.io/springcloud/eureka-springcloud:0.0.1
+        imagePullPolicy: Always
+        env:
+        - name: SERVER_PORT
+          value: "8761" 
+        - name: PROFILE
+          value: prod
+        envFrom:
+        - configMapRef:
+            name: "eureka-springcloud-cm"        
+        - secretRef:
+            name: "eureka-springcloud-secret"           
+        ports:
+        - name: containerport
+          containerPort: 8761
+        resources:
+          requests:
+            cpu: 128m
+            memory: 128Mi
+          limits:
+            cpu: 1024m
+            memory: 1024Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-springcloud
+  namespace: springcloud  
+spec:
+  type: ClusterIP
+  selector:
+    app: eureka-springcloud
+  ports:
+  - name: port1
+    port: 8761
+    targetPort: 8761
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: eureka-springcloud
+  namespace: springcloud  
+spec:
+  rules:
+  - host: {{ SERVICE_HOST }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service: 
+            name: eureka-springcloud 
+            port: 
+              number: 8761
