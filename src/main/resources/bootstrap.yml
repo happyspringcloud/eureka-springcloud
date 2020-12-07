@@ -1,0 +1,15 @@
+server:
+  port: ${server_port:8761}
+ 
+spring:
+  cloud:
+    config:
+      uri: ${config_servers:http://localhost:9001}
+      searchPaths: eureka-ddd
+---
+spring:
+  application:
+    name: eureka-ddd
+  profiles:
+    active: ${profile:local}
+    include: common
