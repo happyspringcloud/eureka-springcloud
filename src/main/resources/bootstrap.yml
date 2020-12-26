@@ -1,6 +1,7 @@
 server:
   port: ${server_port:8761}
- 
+
+
 spring:
   cloud:
     config:
@@ -13,4 +14,3 @@ spring:
   profiles:
     active: ${profile:local}
     include: common
-    
